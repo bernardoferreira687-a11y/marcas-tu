@@ -47,7 +47,7 @@ input[type="checkbox"] { accent-color: var(--green); }
 .brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; }
 .brand-symbol { width: 41px; height: 41px; display: inline-grid; place-items: center; color: var(--paper); background: var(--green); border-radius: 12px; font-family: var(--serif); font-size: 31px; line-height: 1; padding-bottom: 5px; letter-spacing: -4px; padding-right: 4px; }
 .brand-name { font-size: 24px; font-weight: 720; letter-spacing: -1.1px; white-space: nowrap; }
-.brand-dot { color: var(--coral); font-size: 20px; margin-left: -5px; }
+.brand-dot { color: var(--coral); font-size: 1em; margin-left: 1px; }
 .desktop-nav { display: flex; align-items: center; gap: 29px; }
 .nav-link { position: relative; font-size: 13px; font-weight: 550; color: #66705e; padding-block: 35px; transition: color .2s; }
 .nav-link:hover, .nav-link.active { color: var(--green); }
@@ -365,7 +365,6 @@ input[type="checkbox"] { accent-color: var(--green); }
   .brand { gap: 8px; }
   .brand-symbol { width: 34px; height: 34px; border-radius: 10px; font-size: 27px; }
   .brand-name { font-size: 21px; }
-  .brand-dot { font-size: 16px; }
   .header-actions { gap: 7px; }
   .header-actions .button { min-height: 36px; padding: 9px 13px; font-size: 10px; }
   .menu-toggle { height: 36px; width: 36px; }
