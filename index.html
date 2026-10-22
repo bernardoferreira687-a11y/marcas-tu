@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#164a3a">
+    <meta name="description" content="Menos indecisão, mais bons momentos. Descobre restaurantes e encontra a tua próxima mesa com o Marcas Tu. Surpresa opcional, boas memórias sempre.">
+    <title>Marcas Tu — Bons momentos. Mesas inesperadas.</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Saltar para o conteúdo</a>
+    <header class="site-header">
+      <div class="header-inner container">
+        <a class="brand" href="#home" aria-label="Marcas Tu, página inicial"><span class="brand-symbol" aria-hidden="true">m.</span><span class="brand-name">marcas tu<span class="brand-dot">.</span></span></a>
+        <nav class="desktop-nav" aria-label="Navegação principal">
+          <a class="nav-link" href="#explorar">Encontrar uma mesa</a>
+          <a class="nav-link" href="#reservas">As minhas reservas <span class="booking-count" hidden></span></a>
+          <a class="nav-link" href="#restaurante">Para restaurantes</a>
+        </nav>
+        <div class="header-actions">
+          <button class="button button-outline button-small" data-action="profile" id="profile-trigger">O meu perfil</button>
+          <button class="menu-toggle" data-action="menu" aria-label="Abrir menu" aria-controls="mobile-navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+        </div>
+      </div>
+      <nav class="mobile-nav" id="mobile-navigation" aria-label="Navegação no telemóvel" hidden>
+        <a class="nav-link" href="#explorar">Encontrar uma mesa</a>
+        <a class="nav-link" href="#reservas">As minhas reservas</a>
+        <a class="nav-link" href="#restaurante">Para restaurantes</a>
+      </nav>
+    </header>
+    <main id="main-content" tabindex="-1"></main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand"><a class="brand" href="#home"><span class="brand-symbol" aria-hidden="true">m.</span><span class="brand-name">marcas tu.</span></a><p class="footer-copy">Tu escolhes o momento.<br>Nós encontramos a mesa.</p></div>
+        <div class="footer-links"><span>À tua mesa</span><a href="#explorar">Explorar restaurantes</a><a href="#reservas">As minhas reservas</a><button data-action="how">Como funciona</button></div>
+        <div class="footer-links"><span>Do outro lado da mesa</span><a href="#restaurante">Tenho um restaurante</a><button data-action="about">Sobre o Marcas Tu</button><button data-action="privacy">Privacidade</button></div>
+        <div class="footer-note"><span class="footer-kicker">FEITO PARA PARTILHAR</span><p>As melhores histórias<br>começam com um<br>“vamos jantar?”.</p></div>
+      </div>
+      <div class="container footer-bottom"><span>© <span id="current-year"></span> Marcas Tu</span><span>Versão de demonstração · Restaurantes fictícios · Sem reservas reais</span><span>Feito com tempo para estar à mesa.</span></div>
+    </footer>
+    <dialog id="site-modal" class="modal" aria-labelledby="modal-title">
+      <button class="modal-close" data-action="close-modal" aria-label="Fechar janela">×</button>
+      <div class="modal-content" id="modal-content"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <noscript>Ativa o JavaScript para explorar os restaurantes e experimentar as reservas de demonstração.</noscript>
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>
