@@ -62,11 +62,11 @@ test('surpresa respeita preferências e permite guardar, recuperar e cancelar a 
   await page.locator('#home-city').fill('Port');
   await page.locator('#home-city-options').getByRole('option', { name: 'Porto', exact: true }).click();
   await page.locator('#home-budget').selectOption('25');
-  await page.locator('#home-guests').selectOption('3');
+  await page.locator('#home-guests').fill('12');
   await page.locator('#search-form button[type="submit"]').click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.locator('.reveal-details h3')).toHaveText('Forno da Rua');
-  await expect(page.locator('#booking-guests')).toHaveValue('3');
+  await expect(page.locator('#booking-guests')).toHaveValue('12');
   await fillBooking(page);
   await expect(page.locator('.booking-reference')).toHaveText(/^MT-[A-Z0-9]{6}$/);
   await expect(page.locator('#modal-content')).toContainText('Não foi enviado qualquer email.');
@@ -74,11 +74,12 @@ test('surpresa respeita preferências e permite guardar, recuperar e cancelar a 
   await expect(page).toHaveURL(/#reservas$/);
   await expect(page.locator('.booking-card')).toHaveCount(1);
   await expect(page.locator('.booking-card')).toContainText('Forno da Rua');
-  await expect(page.locator('.booking-card')).toContainText('3 pessoas');
+  await expect(page.locator('.booking-card')).toContainText('12 pessoas');
   await page.reload();
   await expect(page.locator('.booking-status')).toHaveText('Confirmada · demonstração');
+  await expect(page.locator('.booking-card')).toContainText('12 pessoas');
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('marcas-tu:bookings:v1')));
-  expect(stored[0]).toMatchObject({ restaurantId: 'forno-da-rua', surprise: true, guests: 3, email: 'ana@example.test' });
+  expect(stored[0]).toMatchObject({ restaurantId: 'forno-da-rua', surprise: true, guests: 12, email: 'ana@example.test' });
   await page.getByRole('button', { name: 'Cancelar reserva', exact: true }).click();
   await page.getByRole('button', { name: 'Manter a reserva', exact: true }).click();
   await expect(page.locator('.booking-status')).toContainText('Confirmada');
@@ -96,8 +97,21 @@ test('reserva direta valida os campos e impede reservas duplicadas', async ({ pa
   await page.locator('#booking-form button[type="submit"]').click();
   await expect(page.locator('#booking-form')).toBeVisible();
   await expect(page.locator('.booking-reference')).toHaveCount(0);
+  await page.locator('#booking-name').fill('Maria Teste');
+  await page.locator('#booking-email').fill('maria@example.test');
+  await page.locator('#booking-form [name="consent"]').check();
+  const guests = page.locator('#booking-guests');
+  for (const invalid of ['', '0', '-2', '1.5']) {
+    await guests.fill(invalid);
+    expect(await guests.evaluate((input) => input.validity.valid)).toBe(false);
+    await page.locator('#booking-form button[type="submit"]').click();
+    await expect(page.locator('#booking-form')).toBeVisible();
+    await expect(page.locator('.booking-reference')).toHaveCount(0);
+  }
+  await guests.fill('25');
   await fillBooking(page, 'Maria Teste', 'maria@example.test');
   await expect(page.locator('.booking-reference')).toBeVisible();
+  await expect(page.locator('.form-summary')).toContainText('25 pessoas');
   await page.locator('[data-action="close-modal"]').first().click();
   await page.locator('[data-action="book"][data-id="casa-do-largo"]').click();
   await fillBooking(page, 'Maria Teste', 'maria@example.test');
@@ -105,6 +119,7 @@ test('reserva direta valida os campos e impede reservas duplicadas', async ({ pa
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('marcas-tu:bookings:v1')));
   expect(stored).toHaveLength(1);
   expect(stored[0].surprise).toBe(false);
+  expect(stored[0].guests).toBe(25);
 });
 
 test('perfil local preenche reservas, persiste e pode ser removido', async ({ page }) => {

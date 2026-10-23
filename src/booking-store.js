@@ -85,9 +85,9 @@ export function createBooking(input = {}) {
   if (!validDate(input.date)) throw new Error('Escolhe uma data válida.');
   if (input.date < todayInLisbon()) throw new Error('A reserva tem de ser para hoje ou uma data futura.');
   if (!restaurant.times.includes(input.time)) throw new Error('Escolhe um horário disponível para este restaurante.');
-  const guests = Number(input.guests);
-  if (!Number.isInteger(guests) || guests < 1 || guests > 8) {
-    throw new Error('Escolhe entre 1 e 8 pessoas.');
+  const guests = ['number', 'string'].includes(typeof input.guests) ? Number(input.guests) : NaN;
+  if (!Number.isSafeInteger(guests) || guests < 1) {
+    throw new Error('Indica um número inteiro de pessoas, igual ou superior a 1.');
   }
 
   const bookings = getBookings();

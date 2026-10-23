@@ -64,7 +64,7 @@ export function homeView({ restaurants = [], city = 'Lisboa', favorites = [], pr
         <span class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-location-status></span>
       </div>
       <div class="search-field"><span class="field-icon">${icon('calendar')}</span><div class="field-copy"><label for="home-date">Quando?</label><input id="home-date" name="date" type="date" value="${escapeHtml(date)}" min="${dateToday()}" required aria-label="Data da reserva"></div></div>
-      <div class="search-field"><span class="field-icon">${icon('users')}</span><div class="field-copy"><label for="home-guests">Quantas pessoas?</label><select id="home-guests" name="guests">${Array.from({ length: 8 }, (_, i) => `<option value="${i + 1}"${selected(i + 1, 2)}>${i + 1} ${i === 0 ? 'pessoa' : 'pessoas'}</option>`).join('')}</select></div></div>
+      <div class="search-field"><span class="field-icon">${icon('users')}</span><div class="field-copy"><label for="home-guests">Quantas pessoas?</label><input id="home-guests" name="guests" type="number" inputmode="numeric" min="1" step="1" value="2" required></div></div>
       <div class="search-field"><span class="field-icon">${icon('utensils')}</span><div class="field-copy"><label for="home-budget">O teu orçamento</label><select id="home-budget" name="budget">${budgetOptions(40)}</select></div></div>
       <button class="button button-primary search-submit" type="submit">Surpreende-me ${icon('sparkles')}</button>
     </form>
@@ -119,7 +119,7 @@ export function partnersView({ profile } = {}) {
 
 export function bookingFormView({ restaurant, defaults = {}, surprise = false, error = '' } = {}) {
   if (!restaurant) return `<h2 class="modal-title" id="modal-title">Esta mesa já não está disponível.</h2><p class="modal-intro">Experimenta escolher outro restaurante.</p>`;
-  const guests = Number(defaults.guests) || 2;
+  const guests = defaults.guests ?? 2;
   return `<p class="modal-eyebrow">${surprise ? 'A TUA SURPRESA ESTÁ NA MESA' : 'UM BOM MOMENTO COMEÇA AQUI'}</p><h2 class="modal-title" id="modal-title">${surprise ? 'A nossa escolha para ti.' : 'Vamos guardar esta mesa?'}</h2>
   <div class="surprise-reveal"><img class="reveal-image" src="${escapeHtml(restaurant.image)}" alt="Ambiente ilustrativo de ${escapeHtml(restaurant.name)}" width="180" height="140"><div class="reveal-details"><p class="card-location">${escapeHtml(restaurant.cuisine)} · ${escapeHtml(restaurant.city)}</p><h3>${escapeHtml(restaurant.name)}</h3><p>${escapeHtml(restaurant.neighborhood)} · ${escapeHtml(money(restaurant.price))} / pessoa</p></div></div>
   <p class="modal-intro">${escapeHtml(restaurant.description)}</p><div class="inline-notice">Esta é uma reserva de demonstração. Não é enviada ao restaurante.</div>
@@ -128,7 +128,7 @@ export function bookingFormView({ restaurant, defaults = {}, surprise = false, e
     <div class="form-field"><label for="booking-email">Email</label><input id="booking-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="ola@exemplo.pt" value="${escapeHtml(defaults.email)}"></div>
     <div class="form-field"><label for="booking-date">Dia</label><input id="booking-date" name="date" type="date" min="${escapeHtml(defaults.minDate || dateToday())}" value="${escapeHtml(defaults.date)}" required></div>
     <div class="form-field"><label for="booking-time">Hora</label><select id="booking-time" name="time" required>${options(restaurant.times || [], defaults.time || restaurant.times?.[0])}</select></div>
-    <div class="form-field full-width"><label for="booking-guests">Pessoas à mesa</label><select id="booking-guests" name="guests">${Array.from({ length: 8 }, (_, i) => `<option value="${i + 1}"${selected(i + 1, guests)}>${i + 1} ${i === 0 ? 'pessoa' : 'pessoas'}</option>`).join('')}</select></div>
+    <div class="form-field full-width"><label for="booking-guests">Pessoas à mesa</label><input id="booking-guests" name="guests" type="number" inputmode="numeric" min="1" step="1" value="${escapeHtml(guests)}" required></div>
     <div class="form-field full-width"><label class="consent-label"><input type="checkbox" name="consent" required> <span>Compreendo que esta reserva é de demonstração.</span></label></div>
   </div>${error ? `<p class="form-error" role="alert">${escapeHtml(error)}</p>` : ''}<button class="button button-primary button-wide" type="submit">Confirmar reserva de demonstração ${icon('arrowRight')}</button><p class="form-hint">Os teus dados ficam apenas neste dispositivo.</p></form>`;
 }

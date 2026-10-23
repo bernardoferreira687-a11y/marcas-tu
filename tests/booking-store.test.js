@@ -66,10 +66,25 @@ test('rejeita nome, email, restaurante, horário e número de pessoas inválidos
   assert.throws(() => store.createBooking(sample({ email: 'sem-email' })), /email/);
   assert.throws(() => store.createBooking(sample({ restaurantId: 'desconhecido' })), /restaurante válido/);
   assert.throws(() => store.createBooking(sample({ time: '03:00' })), /horário disponível/);
-  for (const guests of [0, 9, 1.5, 'abc', null]) {
-    assert.throws(() => store.createBooking(sample({ guests })), /1 e 8 pessoas/);
+  for (const guests of [
+    '', ' ', 0, '0', -1, '-9', 1.5, '2.5', 'abc', NaN, Infinity, -Infinity,
+    'NaN', 'Infinity', Number.MAX_SAFE_INTEGER + 1, String(Number.MAX_SAFE_INTEGER + 1),
+    null, undefined, true, false, [], {},
+  ]) {
+    assert.throws(() => store.createBooking(sample({ guests })), /número inteiro de pessoas/);
   }
   assert.equal(store.getBookings().length, 0);
+});
+
+test('aceita e persiste grupos acima de oito sem um máximo de negócio', async () => {
+  const sizes = [1, 9, 12, 25, 100, '9', '12', '25', '100', Number.MAX_SAFE_INTEGER, String(Number.MAX_SAFE_INTEGER)];
+  sizes.forEach((guests, index) => {
+    const booking = store.createBooking(sample({ guests, email: `grupo-${index}@example.pt` }));
+    assert.equal(booking.guests, Number(guests));
+    assert.equal(typeof booking.guests, 'number');
+  });
+  const reloaded = await import(`../src/booking-store.js?groups=${Math.random()}`);
+  assert.deepEqual(reloaded.getBookings().map((booking) => booking.guests), sizes.map(Number).reverse());
 });
 
 test('impede duplicados confirmados e permite voltar a reservar depois de cancelar', () => {
