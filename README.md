@@ -33,7 +33,8 @@ Este último comando serve a compilação de produção depois de `npm run build
 
 - Descoberta de oito restaurantes fictícios em Lisboa, Porto e Cascais.
 - Pesquisa por cidade, cozinha, orçamento, nome ou bairro.
-- Escolha surpresa dentro da cidade e do orçamento selecionados.
+- Pesquisa de localização por escrita e sugestões de municípios e localidades de Portugal continental, Açores e Madeira.
+- Escolha surpresa dentro da localização e do orçamento selecionados, com indicação quando não existem restaurantes de demonstração nessa zona.
 - Favoritos, perfil local, criação e cancelamento de reservas de demonstração.
 - Pedido de adesão de restaurantes em modo de demonstração.
 - Layout adaptado ao telemóvel, navegação por teclado e formulários com validação.
@@ -47,3 +48,9 @@ Perfil, favoritos, reservas e pedidos de adesão ficam no armazenamento local do
 As fotografias são imagens originais geradas para esta demonstração. Os dois cenários são reutilizados para ilustrar os restaurantes; não representam estabelecimentos reais. O site não precisa de recursos externos, credenciais nem APIs para funcionar.
 
 Para receber reservas reais, a próxima fase precisa de um backend, base de dados, autenticação, disponibilidade dos restaurantes e envio de confirmações.
+
+## Localidades e publicação
+
+A pesquisa usa uma base local de municípios e localidades derivada de dados postais, sem depender de uma API externa no browser. A origem, a licença, a cobertura e o comando de atualização estão documentados em [docs/locations.md](docs/locations.md). A presença de uma localidade nas sugestões não implica que existam restaurantes de demonstração nessa zona.
+
+`npm run build:pages` prepara `dist-pages/index.html` e `.nojekyll` para a branch de publicação `gh-pages`. Essa versão inclui os estilos, o código, as imagens e as sugestões de localidade no próprio ficheiro e funciona no subcaminho do GitHub Pages. A branch `main` guarda o código-fonte; uma atualização do código deve ser compilada e publicada na branch `gh-pages` para aparecer no site.

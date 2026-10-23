@@ -3,6 +3,8 @@ import { restaurants, filterRestaurants, chooseRestaurant } from './data.js';
 import { getBookings, createBooking, cancelBooking, getProfile, saveProfile, clearProfile } from './booking-store.js';
 import { homeView, exploreView, bookingsView, partnersView, bookingFormView, confirmationView, loginFormView, partnerFormView, partnerSuccessView, escapeHtml } from './views.js';
 import { icon } from './icons.js';
+import { searchLocations, findExactLocation } from './locations.js';
+import { mountLocationAutocomplete } from './location-autocomplete.js';
 
 const main = document.querySelector('#main-content');
 const modal = document.querySelector('#site-modal');
@@ -29,11 +31,12 @@ function readFavorites() {
 const state = {
   route: 'home', city: 'Lisboa', favorites: readFavorites(),
   filters: { query: '', city: 'Todas', cuisine: 'Todas', budget: '' },
-  preferences: { city: 'Lisboa', date: calendarDate(1), guests: '2', budget: '40' },
+  preferences: { city: 'Lisboa', location: findExactLocation('Lisboa'), date: calendarDate(1), guests: '2', budget: '40' },
   bookingContext: null, modalTrigger: null,
 };
 
 let toastTimeout;
+let locationAutocomplete = null;
 function notify(message) {
   clearTimeout(toastTimeout);
   toast.textContent = message;
@@ -67,6 +70,8 @@ function closeMenu() {
 }
 
 function render(focus = false) {
+  locationAutocomplete?.destroy();
+  locationAutocomplete = null;
   const shared = { restaurants, favorites: state.favorites, profile: getProfile(), date: state.preferences.date };
   if (state.route === 'explorar') {
     main.innerHTML = exploreView({ ...shared, restaurants: filterRestaurants(state.filters), filters: state.filters });
@@ -83,6 +88,14 @@ function render(focus = false) {
       }
       const date = form.elements.namedItem('date');
       if (date) date.min = calendarDate();
+      locationAutocomplete = mountLocationAutocomplete(form.querySelector('[data-location-autocomplete]'), {
+        searchLocations,
+        findExactLocation,
+        onSelect(location) {
+          state.preferences.city = location.label;
+          state.preferences.location = location;
+        },
+      });
     }
   }
   refreshHeader();
@@ -139,9 +152,15 @@ function openBooking(restaurant, surprise = false, defaults = {}) {
 }
 
 function surprise(preferences = state.preferences) {
-  const choice = chooseRestaurant({ city: preferences.city, budget: preferences.budget });
+  const area = preferences.location ? { location: preferences.location } : { city: preferences.city };
+  const choice = chooseRestaurant({ ...area, budget: preferences.budget });
   if (!choice) {
-    showModal(`<p class="modal-eyebrow">VAMOS ENCONTRAR A TUA MESA</p><h2 class="modal-title" id="modal-title">Ainda não temos essa combinação.</h2><p class="modal-intro">Experimenta outro orçamento ou explora os nossos restaurantes para encontrar um plano à tua medida.</p><button class="button button-dark button-wide" data-action="explore">Explorar restaurantes ${icon('arrowRight')}</button>`);
+    const noRestaurantsInArea = !filterRestaurants(area).length;
+    const title = noRestaurantsInArea ? 'Ainda não temos mesas nesta zona.' : 'Ainda não temos essa combinação.';
+    const description = noRestaurantsInArea
+      ? `Ainda não temos restaurantes de demonstração em <strong>${escapeHtml(preferences.location?.label || preferences.city)}</strong>. Experimenta outra localidade ou explora os restaurantes disponíveis.`
+      : 'Experimenta outro orçamento ou explora os nossos restaurantes para encontrar um plano à tua medida.';
+    showModal(`<p class="modal-eyebrow">VAMOS ENCONTRAR A TUA MESA</p><h2 class="modal-title" id="modal-title">${title}</h2><p class="modal-intro">${description}</p><button class="button button-dark button-wide" data-action="explore">Explorar restaurantes ${icon('arrowRight')}</button>`);
     return;
   }
   openBooking(choice, true, preferences);
@@ -210,8 +229,12 @@ document.addEventListener('click', (event) => {
   } else if (action === 'profile' || action === 'login') renderProfile();
   else if (action === 'close-modal') closeModal();
   else if (action === 'book') openBooking(restaurants.find((item) => item.id === id));
-  else if (action === 'surprise') surprise();
-  else if (action === 'city') { state.city = city; state.preferences.city = city; render(); }
+  else if (action === 'surprise') {
+    const form = document.querySelector('#search-form');
+    if (form) form.requestSubmit();
+    else surprise();
+  }
+  else if (action === 'city') { state.city = city; state.preferences.city = city; state.preferences.location = findExactLocation(city); render(); }
   else if (action === 'favorite') toggleFavorite(id, button);
   else if (action === 'explore') navigate('explorar');
   else if (action === 'view-bookings') navigate('reservas');
@@ -230,7 +253,13 @@ document.addEventListener('submit', (event) => {
   event.preventDefault();
   const values = Object.fromEntries(new FormData(form));
   if (form.id === 'search-form') {
-    state.preferences = { ...state.preferences, ...values };
+    const location = locationAutocomplete?.getLocation();
+    if (!location) {
+      form.elements.namedItem('city').reportValidity();
+      return;
+    }
+    locationAutocomplete.close();
+    state.preferences = { ...state.preferences, ...values, city: location.label, location };
     surprise(state.preferences);
   } else if (form.id === 'filter-form') {
     state.filters = { ...state.filters, ...values };

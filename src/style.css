@@ -112,6 +112,30 @@ input[type="checkbox"] { accent-color: var(--green); }
 .field-copy label { font-size: 9px; letter-spacing: .8px; text-transform: uppercase; font-weight: 700; color: #65715e; }
 .field-copy input, .field-copy select { border: 0; padding: 0; width: 100%; background: transparent; font-size: 12px; font-weight: 550; min-height: 21px; color: var(--ink); }
 .field-copy select { cursor: pointer; }
+.location-field { position: relative; z-index: 3; gap: 8px; }
+.location-field .field-copy input { text-overflow: ellipsis; }
+.location-field .field-copy input::placeholder { color: #7b8373; font-weight: 400; }
+.location-field .field-copy input[aria-invalid="true"]:focus { outline-color: var(--coral); }
+.location-clear { display: inline-grid; place-items: center; flex: 0 0 24px; width: 24px; height: 28px; padding: 0; margin-right: -8px; border: 0; border-radius: 5px; background: transparent; color: #7b8873; }
+.location-clear:hover { color: var(--green); background: #edf0e8; }
+.location-clear .icon { width: 13px; height: 13px; }
+.location-suggestions { position: absolute; top: calc(100% + 18px); left: 0; z-index: 20; width: 310px; max-width: calc(100vw - 56px); max-height: 330px; padding: 6px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; border: 1px solid #dfe3d7; border-radius: 10px; background: #fffefa; box-shadow: 0 12px 32px #263d3221; }
+.location-suggestions.is-above { top: auto; bottom: calc(100% + 18px); }
+.location-option { display: flex; align-items: center; gap: 11px; min-height: 53px; padding: 10px 12px; border-radius: 6px; cursor: pointer; text-align: left; color: var(--ink); }
+.location-option:hover, .location-option.active { background: #edf2e8; }
+.location-option-icon { display: grid; place-items: center; flex: 0 0 29px; width: 29px; height: 29px; border-radius: 50%; background: #f1f2e9; color: #758a68; }
+.location-option.active .location-option-icon, .location-option:hover .location-option-icon { background: #dfe9d6; color: var(--green); }
+.location-option-text { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
+.location-option-name { font-size: 12px; line-height: 1.4; font-weight: 650; overflow-wrap: anywhere; }
+.location-option-meta { font-size: 10px; line-height: 1.5; font-weight: 400; color: #687561; overflow-wrap: anywhere; }
+.location-empty { padding: 15px 12px; font-size: 12px; line-height: 1.7; color: #687561; }
+@media (max-width: 600px) {
+  .location-field .field-copy input { min-height: 25px; font-size: 16px; }
+  .location-clear { flex-basis: 24px; min-height: 36px; }
+  .location-suggestions { top: calc(100% + 16px); width: 300px; max-width: calc(100vw - 70px); max-height: 290px; }
+  .location-suggestions.is-above { top: auto; bottom: calc(100% + 16px); }
+  .location-option { min-height: 54px; }
+}
 .search-submit { margin-left: 18px; min-height: 49px; padding: 13px 15px; font-size: 12px; }
 .search-submit .icon { width: 17px; height: 17px; }
 .search-caption { margin: 14px 0 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 10px; color: #626e59; }

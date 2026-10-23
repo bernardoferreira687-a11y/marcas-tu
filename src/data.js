@@ -130,6 +130,24 @@ const normalize = (value) => String(value ?? '')
   .toLocaleLowerCase('pt-PT')
   .trim();
 
+// The demo's restaurants have municipality and neighborhood information,
+// but no coordinates: only match locations their existing details support.
+const demoDistricts = { Lisboa: 'Lisboa', Porto: 'Porto', Cascais: 'Lisboa' };
+
+function matchesLocation(restaurant, location) {
+  if (!location || typeof location !== 'object') return false;
+  if (location.type === 'district') {
+    return normalize(demoDistricts[restaurant.city]) === normalize(location.name);
+  }
+  const municipality = normalize(location.municipality || location.name);
+  if (normalize(restaurant.city) !== municipality) return false;
+  if (location.type === 'municipality') return true;
+  if (location.type === 'locality') {
+    return [restaurant.city, restaurant.neighborhood].some((name) => normalize(name) === normalize(location.name));
+  }
+  return false;
+}
+
 export function filterRestaurants(filters = {}) {
   const city = normalize(filters.city);
   const cuisine = normalize(filters.cuisine);
@@ -137,7 +155,8 @@ export function filterRestaurants(filters = {}) {
   const budget = Number(filters.budget);
 
   return restaurants.filter((restaurant) => {
-    if (city && city !== 'todas' && city !== 'todas as cidades'
+    if (filters.location && !matchesLocation(restaurant, filters.location)) return false;
+    if (!filters.location && city && city !== 'todas' && city !== 'todas as cidades'
       && normalize(restaurant.city) !== city) return false;
     if (cuisine && cuisine !== 'todas' && cuisine !== 'todas as cozinhas'
       && normalize(restaurant.cuisine) !== cuisine) return false;

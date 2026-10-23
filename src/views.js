@@ -52,7 +52,17 @@ export function homeView({ restaurants = [], city = 'Lisboa', favorites = [], pr
   </section>
   <section class="search-wrap container" aria-label="Encontrar a tua próxima mesa">
     <form id="search-form" class="search-panel">
-      <div class="search-field"><span class="field-icon">${icon('pin')}</span><div class="field-copy"><label for="home-city">Onde vamos?</label><select id="home-city" name="city">${options(cities, city)}</select></div></div>
+      <div class="search-field location-field" data-location-autocomplete>
+        <span class="field-icon">${icon('pin')}</span>
+        <div class="field-copy">
+          <label for="home-city">Onde vamos?</label>
+          <input id="home-city" name="city" type="text" value="${escapeHtml(city)}" placeholder="Cidade, vila ou localidade" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-expanded="false" aria-controls="home-city-options" aria-describedby="home-city-hint" data-location-input required>
+        </div>
+        <button class="location-clear" type="button" aria-label="Limpar localidade" data-location-clear>${icon('close')}</button>
+        <div id="home-city-options" class="location-suggestions" role="listbox" aria-label="Localidades de Portugal" data-location-options hidden></div>
+        <span id="home-city-hint" class="sr-only">Escreve uma cidade, município, vila ou localidade de Portugal e escolhe uma sugestão. Podes usar as setas e Enter.</span>
+        <span class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-location-status></span>
+      </div>
       <div class="search-field"><span class="field-icon">${icon('calendar')}</span><div class="field-copy"><label for="home-date">Quando?</label><input id="home-date" name="date" type="date" value="${escapeHtml(date)}" min="${dateToday()}" required aria-label="Data da reserva"></div></div>
       <div class="search-field"><span class="field-icon">${icon('users')}</span><div class="field-copy"><label for="home-guests">Quantas pessoas?</label><select id="home-guests" name="guests">${Array.from({ length: 8 }, (_, i) => `<option value="${i + 1}"${selected(i + 1, 2)}>${i + 1} ${i === 0 ? 'pessoa' : 'pessoas'}</option>`).join('')}</select></div></div>
       <div class="search-field"><span class="field-icon">${icon('utensils')}</span><div class="field-copy"><label for="home-budget">O teu orçamento</label><select id="home-budget" name="budget">${budgetOptions(40)}</select></div></div>

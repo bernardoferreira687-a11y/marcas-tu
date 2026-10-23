@@ -59,7 +59,8 @@ test('pesquisa combina filtros, mostra estado vazio e guarda favoritos após rec
 
 test('surpresa respeita preferências e permite guardar, recuperar e cancelar a reserva', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#home-city').selectOption('Porto');
+  await page.locator('#home-city').fill('Port');
+  await page.locator('#home-city-options').getByRole('option', { name: 'Porto', exact: true }).click();
   await page.locator('#home-budget').selectOption('25');
   await page.locator('#home-guests').selectOption('3');
   await page.locator('#search-form button[type="submit"]').click();
